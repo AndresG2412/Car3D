@@ -10,3 +10,9 @@ out/
 *.fbx
 *.obj
 source-models/
+/coverage
+/build
+*.pem
+npm-debug.log*
+*.tsbuildinfo
+next-env.d.ts

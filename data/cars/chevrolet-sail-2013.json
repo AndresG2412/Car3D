@@ -1,0 +1,22 @@
+{
+  "slug": "chevrolet-sail-2013",
+  "make": "Chevrolet",
+  "model": "Sail",
+  "year": 2013,
+  "body": "sedan",
+  "engine": {
+    "displacementL": 1.4,
+    "cylinders": 4,
+    "valvesPerCylinder": 4,
+    "boreMm": 77.6,
+    "strokeMm": 73.4,
+    "rodMm": 130,
+    "compressionHeightMm": 28,
+    "valveLiftMm": 8,
+    "intakeWindowDeg": [-15, 235],
+    "exhaustWindowDeg": [485, 735],
+    "firingOrder": [1, 3, 4, 2],
+    "verified": false,
+    "notes": "Diámetro y carrera de un 1.4 típico de GM (1389 cc). Biela, altura de compresión, alzada y tiempos de válvulas son aproximados. 16V según el autor, por verificar."
+  }
+}

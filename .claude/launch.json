@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "car3d",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "-p", "3000"],
+      "port": 3000
+    },
+    {
+      "name": "anatomy-figures",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "/Users/camilo/Desktop/Dev/Car3D/docs/anatomy", "-p", "4173", "-c-1"],
+      "port": 4173
+    }
+  ]
+}
