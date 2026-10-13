@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "anatomy": {
+      "source": "wheresryan22/anatomy",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "be5a68ebdab0d7ede52176ce243f88f918c82d59853793225056e0f9850cae4e"
+    }
+  }
+}

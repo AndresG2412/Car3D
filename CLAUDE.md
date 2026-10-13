@@ -1,8 +1,15 @@
 # Car3D
 
-Visor web 3D de carros: modelo en estilo líneas (wireframe/aristas), navegable con touch desde el celular, donde cada pieza (carrocería, rines, rótulas, suspensión, etc.) es una parte independiente que se puede aislar y detallar, de lo más grande a lo más pequeño. Empieza con el carro del autor; la arquitectura debe soportar muchos carros a futuro.
+Visor web 3D de carros por partes: modelo en estilo líneas (wireframe/aristas), navegable con touch desde el celular. No es solo "ver el carro completo": se puede ver el carro entero, un sistema (motor, suspensión, frenos...), un ensamble o una pieza individual, y ver el motor funcionando. Cada pieza es independiente y detallable, de lo más grande a lo más pequeño. Empieza con el carro del autor; la arquitectura debe soportar muchos carros a futuro.
 
 Repo: https://github.com/AndresG2412/Car3D
+
+## Carro actual (único por ahora)
+
+- **Chevrolet Sail 2013, sedán, 1.4 L, 4 cilindros, 4 tiempos.**
+- Válvulas: **16 (4 por cilindro)** según el autor. *Por verificar con la tarjeta de propiedad/manual: el Sail 1.4 suele ser 8V.*
+- Medidas provisionales (Sail sedán India, no verificadas para Colombia): 4249 × 1690 × 1503 mm, distancia entre ejes 2465 mm. Llantas y medidas definitivas: pendientes del autor. Patrón de pernos 4x100.
+- Referencia visual: fotos de un render del Sail (solo para proporciones; no copiar geometría de modelos comerciales). No existe modelo 3D ni planos gratuitos del Sail; se genera por código.
 
 ## Restricciones
 
@@ -16,20 +23,27 @@ Repo: https://github.com/AndresG2412/Car3D
 |---|---|---|
 | Framework | **Next.js (App Router) + TypeScript** | Rutas por carro (`/cars/[slug]`), proyecto grande y escalable, deploy gratis en Vercel |
 | 3D | **three.js + React Three Fiber (R3F) + @react-three/drei** | Estándar de facto, controles táctiles listos, ecosistema grande |
-| Estado | **Zustand** | Selección de pieza, capas visibles, modo explosión |
+| Estado | **Zustand** | Selección de pieza, modo de vista, capas, animación |
 | UI | **Tailwind CSS** | Paneles/overlays rápidos |
-| Formato de modelo | **glTF / GLB** | Jerarquía de nodos con nombres = piezas; carga eficiente |
-| Optimización | **gltf-transform** (Draco/Meshopt, dedupe, instancing) | Reducir peso para móvil |
-| Modelado | **Blender** (gratis) | Crear/limpiar/nombrar piezas y exportar GLB |
-| Hosting | **Vercel (free)**; modelos en `public/` al inicio, luego Cloudflare R2 / Supabase Storage (tier gratis) | Sin costo |
+| Modelo | **Generado por código (paramétrico)**; GLB opcional después | No hay modelo gratuito del Sail; las piezas salen de las medidas |
+| Modelado auxiliar | **Blender** (gratis) + **gltf-transform** | Solo si se importan piezas modeladas a mano (carrocería, etc.) |
+| Datos | JSON local (`data/cars/`) ahora; **Supabase** después (Postgres + MCP disponible, plan free) | Fichas técnicas relacionales; migrar el mismo esquema |
+| Hosting | **Vercel (free)** | Sin costo |
+
+## Skills instaladas
+
+- **anatomy** (`wheresryan22/anatomy`, MIT): genera ilustraciones isométricas interactivas que explican cómo funciona una máquina. Es opcional y secundaria: el visor principal es R3F, no esta skill. Uso previsto: mini-explicaciones animadas de mecanismos (rótula, freno de disco, amortiguador) en un modo educativo. Requiere Node 20.10+ y Chrome para sus verificaciones.
 
 ## Conceptos clave del diseño
 
-- **Una pieza = un nodo con nombre** en el GLB. Convención: `sistema.subsistema.pieza` (ej. `suspension.front_left.ball_joint`). Los nombres enlazan con el catálogo.
-- **Catálogo por carro** en JSON (`data/cars/<slug>.json`): id, nombre, sistema, nodo del GLB, descripción, padre. El visor es data-driven: agregar un carro = GLB + JSON, sin tocar código.
+- **Jerarquía de tres niveles** por carro: **sistema → ensamble → pieza** (ej. motor → bloque con pistones → pistón 2). Cada nodo del catálogo apunta a un grupo del modelo.
+- **Convención de nombres**: `sistema.subsistema.pieza` (ej. `engine.valvetrain.intake_valve_1`, `suspension.front_left.ball_joint`).
+- **Catálogo por carro** en JSON (`data/cars/<slug>.json`): especificaciones (medidas, motor, rines, puertas) + árbol de sistemas/ensambles/piezas con id, nombre, descripción y padre. El visor es data-driven: el modelo se deriva de las especificaciones.
+- **Modos de vista**: carro completo · por sistema (aislar uno, ocultar el resto) · por ensamble · pieza individual · vista explosionada · corte (planos de recorte para ver el interior).
+- **Motor funcionando**: animación calculada con la cinemática biela-manivela, usando el ángulo del cigüeñal como reloj. Mueve pistones, bielas, válvulas y árbol(es) de levas con el orden de encendido real. Controles: reproducir/pausar, velocidad y deslizador para recorrer el ciclo de 4 tiempos (admisión, compresión, explosión, escape) resaltando la etapa. Parámetros desde la ficha: cilindrada, cilindros, diámetro y carrera, válvulas por cilindro.
 - **Estilo líneas**: `EdgesGeometry` (aristas nítidas) y/o `wireframe`; líneas gruesas con `Line2`/`LineMaterial` si hace falta legibilidad en móvil.
-- **Detalle de grande a pequeño**: tocar una pieza → cámara vuela a ella (CameraControls/`Bounds`), se atenúa el resto, panel con info. Capas por sistema (carrocería, suspensión, frenos, rines, motor), vista explosionada, y LOD para piezas pequeñas.
-- **Rendimiento**: `frameloop="demand"` cuando no hay interacción, `dpr` limitado (≤2), instancing para piezas repetidas (tornillos, pernos), GLB comprimidos, carga progresiva por sistema.
+- **Interacción**: tocar una pieza → cámara vuela a ella, se atenúa el resto, panel con información.
+- **Rendimiento**: `frameloop="demand"` cuando no hay animación ni interacción, `dpr` ≤ 2, instancing para piezas repetidas (tornillos, pernos, válvulas), carga progresiva por sistema.
 
 ## Estructura prevista
 
@@ -39,34 +53,21 @@ Car3D/
 ├── README.md
 ├── src/
 │   ├── app/                 # rutas Next (/, /cars/[slug])
-│   ├── components/viewer/   # Canvas, controles, modelo, resaltado
-│   ├── components/ui/       # paneles, lista de piezas, capas
+│   ├── components/viewer/   # Canvas, controles, resaltado, cortes
+│   ├── components/ui/       # árbol de piezas, modos de vista, controles de animación
+│   ├── generators/          # generadores paramétricos (engine, wheel, suspension, body)
 │   ├── store/               # Zustand
-│   └── lib/                 # utilidades (parseo de nodos, catálogo)
-├── data/cars/               # catálogo JSON por carro
-├── public/models/<slug>/    # GLB optimizados
-└── docs/                    # notas de modelado y pipeline
+│   └── lib/                 # cinemática, catálogo, utilidades
+├── data/cars/               # ficha + catálogo JSON por carro
+├── public/models/<slug>/    # GLB (solo si se importan piezas hechas en Blender)
+└── docs/                    # notas de modelado, licencias y referencias
 ```
-
-## Pipeline de modelos
-
-1. Fuente: modelado propio en Blender (con planos/fotos/medidas) o modelo con licencia libre (CC) como base. Respetar y registrar licencias en `docs/`.
-2. Blender: separar por piezas, nombrar con la convención, aplicar transformaciones, origen de cada pieza en su punto lógico.
-3. Exportar GLB → optimizar con gltf-transform → `public/models/<slug>/`.
-4. Escribir/actualizar `data/cars/<slug>.json`.
-
-## Fases
-
-1. **Setup**: scaffold Next + R3F + Tailwind, deploy en Vercel.
-2. **Visor base**: cargar un GLB de prueba, orbit táctil, estilo líneas.
-3. **Piezas**: selección, aislar, fly-to, panel de info, capas.
-4. **Modelo real**: modelar mi carro por sistemas (carrocería → rines → suspensión → frenos → detalles finos).
-5. **Multi-carro**: selector/galería, catálogo data-driven.
-6. **Pulido**: rendimiento móvil, PWA (instalable), vista explosionada.
 
 ## Convenciones de trabajo
 
 - Commits pequeños y descriptivos; rama `main`.
-- No subir GLB crudos pesados ni archivos `.blend` al repo (usar `.gitignore`; guardar fuentes fuera o en almacenamiento gratis).
-- Probar siempre en móvil real o emulación touch antes de dar una fase por terminada.
-- Mantener este archivo actualizado cuando cambien decisiones de stack o estructura.
+- No subir GLB crudos pesados ni archivos `.blend` al repo (ver `.gitignore`).
+- Registrar en `docs/` las fuentes y licencias de cualquier recurso externo.
+- Probar en móvil real o emulación touch antes de dar algo por terminado.
+- Mantener este archivo actualizado cuando cambien decisiones de stack, estructura o datos del carro.
+- Por indicación del autor, avanzar solo con los pasos que pida en cada momento, sin adelantar ni planificar pasos extra.
