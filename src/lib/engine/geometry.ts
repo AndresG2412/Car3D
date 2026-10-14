@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { type EngineSpec, liftAt } from "./kinematics";
+import { type EngineSpec, layoutOf, liftAt } from "./kinematics";
 
 type P2 = [number, number];
 
@@ -76,11 +76,11 @@ export function camLobe(spec: EngineSpec, window: [number, number], baseRadius: 
   return extrudeX(hull(points), x0, x1, [circle(0, 0, 3, 12).reverse()]);
 }
 
-/** A block section with a round bore, extruded upward. */
-export function boredBlock(size: number, boreRadius: number, y0: number, y1: number) {
-  const half = size / 2;
-  const shape = new THREE.Shape([new THREE.Vector2(-half, -half), new THREE.Vector2(half, -half), new THREE.Vector2(half, half), new THREE.Vector2(-half, half)]);
-  shape.holes.push(new THREE.Path(circle(0, 0, boreRadius, 40).reverse().map(([x, y]) => new THREE.Vector2(x, y))));
+/** A block with round bores at each x, extruded upward from y0 to y1. */
+export function boredBlock(width: number, depth: number, bores: number[], boreRadius: number, y0: number, y1: number) {
+  const [w, d] = [width / 2, depth / 2];
+  const shape = new THREE.Shape([new THREE.Vector2(-w, -d), new THREE.Vector2(w, -d), new THREE.Vector2(w, d), new THREE.Vector2(-w, d)]);
+  for (const x of bores) shape.holes.push(new THREE.Path(circle(x, 0, boreRadius, 40).reverse().map(([px, py]) => new THREE.Vector2(px, py))));
   const geometry = new THREE.ExtrudeGeometry(shape, { depth: y1 - y0, bevelEnabled: false, curveSegments: 40 });
   geometry.rotateX(-Math.PI / 2);
   geometry.translate(0, y0, 0);
@@ -96,4 +96,99 @@ export function helix(radius: number, turns: number, perTurn = 28) {
     points.push([radius * Math.cos(a), i / n, radius * Math.sin(a)]);
   }
   return points;
+}
+
+/**
+ * Outline of a hollow piston from the crown down, with three ring grooves (top compression,
+ * second, oil control), in (r, y) with the wrist pin at y = 0.
+ */
+export function pistonProfile(R: number, ch: number): P2[] {
+  const rp = R - 0.1;
+  const rg = R - 3.6;
+  const groove = (top: number, bottom: number): P2[] => [[rp, ch - top], [rg, ch - top], [rg, ch - bottom], [rp, ch - bottom]];
+  return [[0, ch], [rp, ch], ...groove(5, 6.2), ...groove(9, 10.5), ...groove(13.5, 16), [rp, ch - 56], [rp - 3, ch - 56], [rp - 3, ch - 8], [0, ch - 8]];
+}
+
+/** Every reusable piece of one cylinder, in mm, built once from the spec. */
+export function engineParts(spec: EngineSpec) {
+  const L = layoutOf(spec);
+  const ch = spec.compressionHeightMm;
+  const R = L.boreRadius;
+  const springSeat = L.headTop + 3;
+  const retainerBottom = L.bucketBottom - 2;
+  const valveBase = L.deck - 1.5;
+  const stem = retainerBottom - valveBase;
+  const valve = (head: number) => turned([[0, 0], [head, 0], [head, 1.5], [head * 0.45, 4.5], [2.6, 6.5], [2.6, stem], [0, stem]], 16);
+  return {
+    L,
+    springSeat,
+    springRest: retainerBottom - springSeat,
+    valveBase,
+    web: crankWeb(L.throw, -18, -8),
+    webFront: crankWeb(L.throw, 8, 18),
+    pin: barX(12, -8, 8),
+    rod: connectingRod(spec.rodMm),
+    piston: turned(pistonProfile(R, ch), 28),
+    wristPin: barX(7, -30, 30, 12),
+    rings: [
+      splitRing(R - 3.4, R - 0.05, ch - 6.15, 1.1, 0.06, 0),
+      splitRing(R - 3.4, R - 0.05, ch - 10.45, 1.4, 0.06, (2 * Math.PI) / 3),
+      splitRing(R - 3.4, R - 0.05, ch - 15.9, 2.3, 0.06, (4 * Math.PI) / 3),
+    ],
+    gas: new THREE.CylinderGeometry(R - 0.8, R - 0.8, 1, 40).translate(0, 0.5, 0),
+    intakeValve: valve(7.6),
+    exhaustValve: valve(6.8),
+    guide: turned([[4.6, L.headTop], [4.6, L.headTop + 9], [0, L.headTop + 9]], 12),
+    seat: turned([[0, L.headTop], [10, L.headTop], [10, L.headTop + 3], [0, L.headTop + 3]], 20),
+    retainer: turned([[0, retainerBottom], [6, retainerBottom], [6, retainerBottom + 2], [0, retainerBottom + 2]], 16),
+    bucket: turned([[0, L.bucketBottom], [9, L.bucketBottom], [9, L.bucketBottom + L.bucketHeight], [0, L.bucketBottom + L.bucketHeight]], 20),
+    spring: helix(8, 5),
+    intakeLobe: camLobe(spec, spec.intakeWindowDeg, L.camRadius, -4, 4),
+    exhaustLobe: camLobe(spec, spec.exhaustWindowDeg, L.camRadius, -4, 4),
+    camBearing: new THREE.BoxGeometry(8, L.camY + 10 - L.headTop, 20).translate(0, (L.headTop + L.camY + 10) / 2, 0),
+    plug: turned(
+      [
+        [0, L.headTop],
+        [8.5, L.headTop],
+        [8.5, L.headTop + 2],
+        [7.5, L.headTop + 2],
+        [7.5, L.headTop + 11],
+        [4.6, L.headTop + 11],
+        [4.6, L.headTop + 37],
+        [2.4, L.headTop + 37],
+        [2.4, L.headTop + 43],
+        [3.2, L.headTop + 43],
+        [3.2, L.headTop + 45],
+        [0, L.headTop + 45],
+      ],
+      6,
+    ),
+    pedestal: new THREE.BoxGeometry(12, L.throw + 80, 52).translate(0, -L.throw - 57 + (L.throw + 80) / 2, 0),
+    pulleyMark: extrudeX([[17, -1.2], [25, -1.2], [25, 1.2], [17, 1.2]], 0, 0.6),
+  };
+}
+
+export type EngineParts = ReturnType<typeof engineParts>;
+
+/**
+ * A split ring (piston ring, circlip) of rectangular section around the vertical axis, with an
+ * end gap of `gap` radians centred at angle `at` (0 = +z, measured toward +x).
+ */
+export function splitRing(rIn: number, rOut: number, y0: number, height: number, gap = 0.06, at = 0, segments = 64) {
+  const profile = [new THREE.Vector2(rIn, y0), new THREE.Vector2(rOut, y0), new THREE.Vector2(rOut, y0 + height), new THREE.Vector2(rIn, y0 + height), new THREE.Vector2(rIn, y0)];
+  return new THREE.LatheGeometry(profile, segments, at + gap / 2, Math.PI * 2 - gap);
+}
+
+/** A tube or sleeve along x, from an (r, x) outline turned around the x axis. */
+export function turnedX(profile: P2[], segments = 20, phiStart = 0, phiLength = Math.PI * 2) {
+  const geometry = new THREE.LatheGeometry(profile.map(([r, s]) => new THREE.Vector2(r, s)), segments, phiStart, phiLength);
+  geometry.rotateZ(-Math.PI / 2);
+  return geometry;
+}
+
+/** A turned part along z (for pipes, cans and sensors that run front to back). */
+export function turnedZ(profile: P2[], segments = 20) {
+  const geometry = new THREE.LatheGeometry(profile.map(([r, s]) => new THREE.Vector2(r, s)), segments);
+  geometry.rotateX(Math.PI / 2);
+  return geometry;
 }

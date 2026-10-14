@@ -1,0 +1,97 @@
+{
+  "title": "Conjunto pistón y biela",
+  "description": "Un pistón del 1.4 L con sus 3 anillos, el bulón, los seguros, la biela y sus cojinetes. El motor tiene 4 conjuntos iguales: 12 anillos en total. Despiézalo y toca cada pieza.",
+  "parts": [
+    {
+      "id": "piston",
+      "name": "Pistón",
+      "role": "Recibe la presión de la combustión y la transmite a la biela.",
+      "details": [
+        "Aleación de aluminio: liviano y buen conductor del calor.",
+        "Tiene 3 ranuras para los anillos y es hueco por dentro para pesar menos.",
+        "La parte de abajo (falda) lo guía dentro del cilindro sin tocar casi la pared."
+      ]
+    },
+    {
+      "id": "ring-top",
+      "name": "1.er anillo de compresión",
+      "role": "Sella la cámara para que la presión de la combustión no pase al cárter.",
+      "details": [
+        "Es el que soporta más calor y presión; suele ser de acero o hierro con recubrimiento.",
+        "Tiene una abertura entre puntas (luz) para poder dilatarse con el calor.",
+        "Su luz se monta desfasada unos 120° de la del segundo anillo para que los gases no encuentren un camino recto."
+      ]
+    },
+    {
+      "id": "ring-second",
+      "name": "2.º anillo (compresión / rascador)",
+      "role": "Completa el sellado y raspa el aceite que queda en la pared hacia abajo.",
+      "details": [
+        "Detiene los gases que logran pasar el primer anillo.",
+        "Su borde inferior en ángulo actúa como rascador de aceite."
+      ]
+    },
+    {
+      "id": "ring-oil",
+      "name": "Anillo de aceite (3 piezas)",
+      "role": "Raspa el aceite de la pared del cilindro y lo devuelve al cárter.",
+      "details": [
+        "Son dos rieles delgados de acero y un expansor ondulado entre ellos que los empuja contra la pared.",
+        "El aceite raspado pasa por orificios en el fondo de la ranura hacia el interior del pistón.",
+        "Si se desgasta, el motor quema aceite (humo azul por el escape)."
+      ]
+    },
+    {
+      "id": "pin",
+      "name": "Bulón (pasador del pistón)",
+      "role": "Une el pistón con la biela y les permite oscilar entre sí.",
+      "details": [
+        "Acero endurecido, hueco para pesar menos.",
+        "Puede ser flotante (gira en el pistón y en la biela, retenido por seguros) o prensado en la biela, según el motor."
+      ]
+    },
+    {
+      "id": "clip",
+      "name": "Seguros del bulón (circlips)",
+      "role": "Evitan que el bulón se desplace y raye el cilindro.",
+      "details": ["Van en una ranura a cada lado del alojamiento del bulón.", "Se cambian siempre que se desarma el conjunto."]
+    },
+    {
+      "id": "bushing",
+      "name": "Casquillo del pie de biela",
+      "role": "Superficie de deslizamiento entre el bulón y la biela.",
+      "details": [
+        "Suele ser de bronce, va prensado en el ojo pequeño de la biela.",
+        "Con bulón prensado no lleva casquillo: depende del motor (por verificar en el 1.4 del Sail)."
+      ]
+    },
+    {
+      "id": "rod",
+      "name": "Biela",
+      "role": "Convierte el subir y bajar del pistón en giro del cigüeñal.",
+      "details": ["Acero forjado con sección en I.", "El ojo pequeño (pie) va al bulón; el ojo grande (cabeza) abraza el muñón del cigüeñal."]
+    },
+    {
+      "id": "bearing",
+      "name": "Cojinetes de biela (metales)",
+      "role": "Dos medias conchas donde gira el muñón del cigüeñal sobre una película de aceite.",
+      "details": [
+        "Acero con una capa de material antifricción.",
+        "El muñón nunca toca el metal: flota sobre aceite a presión.",
+        "Se fabrican en medidas estándar y de reparación (sobremedida) para cigüeñales rectificados."
+      ]
+    },
+    {
+      "id": "cap",
+      "name": "Tapa de biela",
+      "role": "Cierra la cabeza de la biela alrededor del muñón.",
+      "details": ["Se mecaniza junto con la biela: cada tapa solo sirve en su biela y en su posición."]
+    },
+    {
+      "id": "bolts",
+      "name": "Pernos de biela",
+      "role": "Aprietan la tapa contra la biela.",
+      "details": ["Se aprietan a un torque y ángulo exactos; muchos son de un solo uso porque se estiran al apretarlos."]
+    }
+  ]
+}

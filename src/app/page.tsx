@@ -1,15 +1,18 @@
-import { EngineViewer } from "@/components/viewer/EngineViewer";
-import type { EngineSpec } from "@/lib/engine/kinematics";
-import car from "../../data/cars/chevrolet-sail-2013.json";
+import { EngineCylinder } from "@/components/viewer/engine/EngineCylinder";
+import { EngineViewer, type ViewPreset } from "@/components/viewer/EngineViewer";
+import { currentCar } from "@/lib/cars";
 
-const window2 = ([open, close]: number[]): [number, number] => [open, close];
+const VIEWS: ViewPreset[] = [
+  { id: "front", label: "Frente", dir: [1, 0.05, 0], target: [0, 0, 0], fit: [2.8, 4.6] },
+  { id: "valves", label: "Válvulas", dir: [1, 0.12, 0], target: [0, 1.35, 0], fit: [1.2, 1.9] },
+  { id: "side", label: "Lado", dir: [0, 0.05, 1], target: [0, 0, 0], fit: [2.8, 4.6] },
+  { id: "iso", label: "3/4", dir: [0.68, 0.4, 0.68], target: [0, 0, 0], fit: [3, 4.8] },
+];
 
-const spec: EngineSpec = {
-  ...car.engine,
-  intakeWindowDeg: window2(car.engine.intakeWindowDeg),
-  exhaustWindowDeg: window2(car.engine.exhaustWindowDeg),
-};
-
-export default function Home() {
-  return <EngineViewer spec={spec} title={`${car.make} ${car.model} ${car.year} · motor ${car.engine.displacementL} L · 1 cilindro`} />;
+export default function CylinderPage() {
+  return (
+    <EngineViewer title={`${currentCar.name} · motor ${currentCar.engine.displacementL} L · 1 cilindro`} views={VIEWS}>
+      <EngineCylinder spec={currentCar.spec} />
+    </EngineViewer>
+  );
 }

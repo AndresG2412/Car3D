@@ -1,0 +1,93 @@
+{
+  "title": "Sistema de escape",
+  "description": "Recorrido de los gases desde los 4 cilindros hasta la cola, debajo del carro. Cada pulso sale cuando abre la válvula de escape de su cilindro (orden 1-3-4-2). Configuración típica de un sedán 1.4 L: la ubicación exacta de cada pieza en el Sail está por verificar.",
+  "parts": [
+    {
+      "id": "manifold",
+      "name": "Múltiple de escape",
+      "role": "Recoge los gases de los 4 cilindros y los junta en un solo tubo.",
+      "details": [
+        "Va atornillado a la culata, del lado de las válvulas de escape.",
+        "Es de hierro fundido o acero inoxidable porque los gases salen a 600-900 °C.",
+        "Este es de tipo 4 en 1: los cuatro tubos se unen en un colector."
+      ]
+    },
+    {
+      "id": "manifold-gasket",
+      "name": "Empaque del múltiple",
+      "role": "Sella la unión entre la culata y el múltiple.",
+      "details": ["Suele ser metálico multicapa por la temperatura.", "Si falla se oye un 'tic-tic' en frío y entra aire falso al sensor de oxígeno."]
+    },
+    {
+      "id": "o2-upstream",
+      "name": "Sensor de oxígeno 1 (antes del catalizador)",
+      "role": "Mide el oxígeno que queda en los gases para que la computadora ajuste la mezcla.",
+      "details": [
+        "También se llama sonda lambda.",
+        "Si hay mucho oxígeno la mezcla está pobre; si hay poco, rica. La computadora corrige la inyección cientos de veces por minuto.",
+        "Un sensor dañado aumenta el consumo y enciende el testigo de motor."
+      ]
+    },
+    {
+      "id": "heat-shield",
+      "name": "Protector de calor",
+      "role": "Aísla el calor del catalizador del piso del carro.",
+      "details": ["Lámina metálica delgada; si se suelta produce un zumbido metálico."]
+    },
+    {
+      "id": "catalytic",
+      "name": "Convertidor catalítico",
+      "role": "Convierte los gases tóxicos en gases menos dañinos.",
+      "details": [
+        "Por dentro es un panal cerámico recubierto de platino, paladio y rodio.",
+        "Convierte CO → CO₂, hidrocarburos → CO₂ + agua y NOx → nitrógeno.",
+        "Funciona a partir de unos 300 °C; por eso va cerca del motor."
+      ]
+    },
+    {
+      "id": "o2-downstream",
+      "name": "Sensor de oxígeno 2 (después del catalizador)",
+      "role": "Vigila que el catalizador esté funcionando.",
+      "details": ["Compara su lectura con el sensor 1: si son casi iguales, el catalizador ya no limpia y se enciende el testigo."]
+    },
+    {
+      "id": "flex",
+      "name": "Junta flexible",
+      "role": "Absorbe los movimientos y vibraciones del motor para que no rompan el escape.",
+      "details": ["Es un fuelle corrugado con malla trenzada por fuera.", "Si se rompe, el carro suena 'a moto' desde adelante."]
+    },
+    {
+      "id": "pipe",
+      "name": "Tubería",
+      "role": "Lleva los gases por debajo del piso hasta la parte trasera.",
+      "details": ["Acero aluminizado o inoxidable.", "Se dobla para esquivar el piso, el tanque y el eje trasero."]
+    },
+    {
+      "id": "resonator",
+      "name": "Resonador",
+      "role": "Cancela frecuencias específicas del sonido (el 'zumbido' a velocidad constante).",
+      "details": ["Funciona por interferencia: las ondas que rebotan dentro se anulan con las que llegan."]
+    },
+    {
+      "id": "muffler",
+      "name": "Silenciador (mofle)",
+      "role": "Reduce el ruido de las explosiones antes de que salgan al aire.",
+      "details": [
+        "Por dentro tiene cámaras, tubos perforados y deflectores que hacen que los gases pierdan energía.",
+        "Acumula agua de la combustión; el óxido suele empezar por aquí."
+      ]
+    },
+    {
+      "id": "tailpipe",
+      "name": "Cola de escape",
+      "role": "Saca los gases detrás del carro, lejos de la cabina.",
+      "details": ["El color del hollín dice mucho: negro seco es mezcla rica, blanco persistente puede ser refrigerante, azul es aceite."]
+    },
+    {
+      "id": "hangers",
+      "name": "Soportes de goma",
+      "role": "Cuelgan el escape del piso y aíslan sus vibraciones de la carrocería.",
+      "details": ["Con el calor se resecan; un escape que golpea al pasar baches suele tener un soporte roto."]
+    }
+  ]
+}
